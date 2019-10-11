@@ -38,7 +38,7 @@ from scipy.spatial.distance import euclidean
 
 #+RESULTS[2a253d47c089a054eb3655b60d8ccea8fad581c9]:
 :results:
-# Out[2]:
+# Out[5]:
 :end:
 
 A continuación definiremos una gráfica aleatoria con 10 vértices.
@@ -49,7 +49,7 @@ g=nx.gnp_random_graph(10, 0.2)
 
 #+RESULTS[686d2b8b58905b6e9c928e84fd5489c436bec335]:
 :results:
-# Out[9]:
+# Out[6]:
 :end:
 
 Veremos si nuestra gráfica es un bosque.
@@ -60,8 +60,8 @@ nx.is_forest(g), nx.is_connected(g)
 
 #+RESULTS[e7d1dbb3a296c52111081a2873e11b0c5e1bcb99]:
 :results:
-# Out[10]:
-: (True, False)
+# Out[7]:
+: (False, False)
 :end:
 
 A continuación dibujaremos esta gráfica.
@@ -72,8 +72,8 @@ nx.draw(g, with_labels=True)
 
 #+RESULTS[7a5a44e71604efbb3ac02fd3863ef7628a5be23d]:
 :results:
-# Out[11]:
-[[file:./obipy-resources/1891FKB.png]]
+# Out[8]:
+[[file:./obipy-resources/2315uTn.png]]
 :end:
 
 Calcularemos las componentes conexas de esta gráfica: 
@@ -84,8 +84,8 @@ list(nx.connected_components(g))
 
 #+RESULTS[fd43bac86ab4e6adb6ece858cb2c922a37acadb0]:
 :results:
-# Out[12]:
-: [{0}, {1}, {2, 4, 5, 6, 7, 8}, {3, 9}]
+# Out[9]:
+: [{0, 3, 5, 6, 7}, {1}, {2}, {4, 9}, {8}]
 :end:
 
 Veamos la componente que contiene al vértice 2.
@@ -96,8 +96,8 @@ nx.node_connected_component(g, 2)
 
 #+RESULTS[46f9dabf3af17b6574e7108bc8b02681d03298fd]:
 :results:
-# Out[13]:
-: {2, 4, 5, 6, 7, 8}
+# Out[10]:
+: {2}
 :end:
 
 A continuación dibujaremos un árbol escogido aleatoriamente. 
@@ -109,8 +109,8 @@ nx.draw(t, with_labels=True)
 
 #+RESULTS[40cadd15ea973ae0dd4c6e9ce48469aa6584d9b0]:
 :results:
-# Out[14]:
-[[file:./obipy-resources/1891SUH.png]]
+# Out[11]:
+[[file:./obipy-resources/23157dt.png]]
 :end:
 
 * Puntos en el plano
@@ -127,8 +127,8 @@ plt.show()
 
 #+RESULTS[a2473dc10d4388557d58b145c3b398832095523d]:
 :results:
-# Out[17]:
-[[file:./obipy-resources/18915yZ.png]]
+# Out[12]:
+[[file:./obipy-resources/2315Ioz.png]]
 :end:
 
 Vamos a definir una función que dibuje =n= puntos en el plano
@@ -146,7 +146,7 @@ def puntos_en_el_plano(n):
 
 #+RESULTS[1cddae6365e0c7df4eef77ad1b5bc8bbf58f96c2]:
 :results:
-# Out[19]:
+# Out[13]:
 :end:
 
 #+begin_src ipython
@@ -155,7 +155,7 @@ puntos=puntos_en_el_plano(50)
 
 #+RESULTS[9ff8894398a2a07a6c3e77984fe46197b54683d8]:
 :results:
-# Out[24]:
+# Out[14]:
 :end:
 
 #+begin_src ipython
@@ -165,8 +165,8 @@ plt.show()
 
 #+RESULTS[3e875b45815176da72d413ae26cf591eba8c559f]:
 :results:
-# Out[22]:
-[[file:./obipy-resources/1891THm.png]]
+# Out[15]:
+[[file:./obipy-resources/23156xC.png]]
 :end:
 
 Hagamos una función tal que, a partir de dos listas, produzca el
@@ -182,7 +182,7 @@ def dibujo_puntos(listax, listay):
 
 #+RESULTS[b62c33bac294c25d54476a3d29ed7d0fda02559e]:
 :results:
-# Out[23]:
+# Out[16]:
 :end:
 
 #+begin_src ipython
@@ -191,9 +191,116 @@ dibujo_puntos(*puntos)
 
 #+RESULTS[274d1e4a2e4c1e9a72c9f464a39ff8637dd52977]:
 :results:
-# Out[25]:
-[[file:./obipy-resources/1891gRs.png]]
+# Out[17]:
+[[file:./obipy-resources/2315H8I.png]]
 :end:
+
+*Distancia Euclidiana
+
+#+begin_src ipython
+a = (0,0)
+b = (3,5)
+euclidean(a,b)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[18]:
+: 5.830951894845301
+:end:
+
+* Grafica con pesos
+
+En =networkx= se pueden considerar graficas donde cada arista tiene un
+peso. Por ejemplo:
+
+#+begin_src ipython
+g = nx.Graph()
+g.add_nodes_from(["a","b","c"])
+g.add_weighted_edges_from([("a","b",2),("a","c", 0.5)])
+position= nx.spring_layout(g)
+nx.draw_networkx_edge_labels(g, pos=position)
+nx.draw(g, with_labels=True, pos=position)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[19]:
+[[file:./obipy-resources/2315UGP.png]]
+:end:
+
+Definimos ahora una funcion que, dadas dos listas de numeros produzca
+una grafica con pesos donde los vertices sean los puntos y el peso
+entre dos puntos cualesquiera se la distancia euclidiana
+
+#+begin_src ipython
+def grafica_euclidiana(listax,listay):
+    G= nx.Graph()
+    n= len(listax)
+    vertices = []
+    for i in range(n):
+        vertices.append((listax[i],listay[i]))
+        aristas = []
+
+    for i in range(n):
+        for j in range(i+1, n):
+            u = vertices[i]
+            v = vertices[j]
+            aristas.append((u,v,euclidean(u,v)))   
+    G.add_nodes_from(vertices)
+    G.add_weighted_edges_from(aristas)
+    return G
+                
+#+end_src
+
+#+RESULTS[581de2f9bfb44bbdcb8a8669aafde552ab70630f]:
+:results:
+# Out[29]:
+:end:
+
+#+begin_src ipython
+g = grafica_euclidiana(*puntos)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[30]:
+:end:
+
+#+begin_src ipython
+def arbol_menor_costo(G):
+    T=nx.Graph
+    T.add_nodes_from(G)
+    aristas = list(G.edges(data = True))
+    aristas = sorted(aristas, key = lambda e : -e[2]['weight'])
+    while len(T.edges()) < len(G)-1:
+        e = aristas.pop()
+        if not(e[0] in nx.node_connected_component(T,e[1])):
+            T.add_edge(e[0], e[1])
+    return T
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[31]:
+:end:
+
+#+begin_src ipython
+plt.figure(figsize=(10,10))
+
+for v in t.nodes():
+    plt.plot(v[0], v[1], 'ro')
+
+for e in t.edges():
+    p1 = e[0]
+    p2 = e[1]
+    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], color='blue' )
+
+plt.axis([-0.1, 1.1, -0.1, 1.1])
+plt.gca().set_aspect('equal')
+
+plt.show()
+#+end_src
 
 
 # Local Variables:
